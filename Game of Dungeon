@@ -1,0 +1,36 @@
+class Solution {
+    public int calculateMinimumHP(int[][] dungeon) {
+        int m = dungeon.length;
+        int n = dungeon[0].length;
+        int[][] dp = new int[m][n];
+
+        int end = dungeon[m - 1][n - 1];
+        dp[m - 1][n - 1] = end <= 0 ? (-1)*end + 1 : 1;
+
+        populate(dp, dungeon, 0, 0);
+
+        return dp[0][0];
+    }
+
+    public void populate(int[][] dp, int[][] dungeon, int row, int col) {
+        if (dp[row][col] != 0) {
+            return;
+        }
+
+        int toPut = Integer.MAX_VALUE;
+
+        if (row + 1 < dp.length) {
+            populate(dp, dungeon, row + 1, col);
+            toPut = Math.min(toPut, dp[row + 1][col] - dungeon[row][col]);
+        }
+
+        if (col + 1 < dp[0].length) {
+            populate(dp, dungeon, row, col + 1);
+            toPut = Math.min(toPut, dp[row][col + 1] - dungeon[row][col]);
+        }
+
+        toPut = Math.max(toPut, 1);
+
+        dp[row][col] = toPut;
+    }
+}
