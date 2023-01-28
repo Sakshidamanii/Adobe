@@ -1,0 +1,65 @@
+class Solution {
+    int len;
+
+    public int findKthNumber(int n, int k) {
+        len = len(n);
+        return findNumber(new ArrayList<>(), n, k);
+    }
+
+    private int findNumber(List<Integer> prefix, int max, int target) {
+        if (target == 0) {
+            return digitsToNumber(prefix);
+        }
+        int tryDigit = prefix.size() == 0 ? 1 : 0;
+        for (;tryDigit < 10; ++tryDigit) {
+            prefix.add(tryDigit);
+            int branchSize = calcBranchSize(prefix, max);
+            if (branchSize < target) {
+                target -= branchSize;
+            } else {
+                return findNumber(prefix, max, target-1);
+            }
+
+            prefix.remove(prefix.size() - 1);
+        }
+        return -1;
+    }
+
+    private int calcBranchSize(List<Integer> prefix, int max) {
+        int maxSuffixLength = len - prefix.size();
+        int count = 0;
+        int mult = 1;
+        int prefixNumber = digitsToNumber(prefix);
+        for (int suffixLength = 0; suffixLength <= maxSuffixLength; ++suffixLength) {
+            int minValue = prefixNumber * mult;
+            int maxValue = minValue + mult - 1;
+            if (minValue > max) {
+                break;
+            }
+            if (maxValue > max) {
+                maxValue = max;
+            }
+            int countValues = maxValue - minValue + 1;
+            count += countValues;
+            mult *= 10;
+        }
+        return count;
+    }
+
+    private int digitsToNumber(List<Integer> digits) {
+        int number = 0;
+        for (Integer d : digits) {
+            number = number * 10 + d;
+        }
+        return number;
+    }
+
+    int len(int n) {
+        int l = 0;
+        while (n > 0) {
+            n /= 10;
+            ++l;
+        }
+        return l;
+    }
+}
